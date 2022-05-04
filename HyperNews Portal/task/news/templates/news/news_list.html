@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HyperNews List</title>
+</head>
+<body>
+    <h2>Hyper news</h2>
+
+{% for date, news_dict_date in news_dict.items %}
+    <h4>{{ date }}</h4>
+    <ul>
+    {% for title, link in news_dict_date.items %}
+        <li><a href="/news/{{ link }}/">{{ title }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+
+    <a href="/news/create/" target="_blank">Create Page</a>
+
+</body>
+</html>
