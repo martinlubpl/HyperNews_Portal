@@ -9,14 +9,13 @@ from django.views import View
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Coming soon")
+    return redirect('news/')
 
 
 def news(request, link_id=None):
     full_json_path = os.path.join(settings.BASE_DIR, 'hypernews\\', settings.NEWS_JSON_PATH)
     with open(full_json_path, 'r') as f:
         news_json = json.load(f)
-
         dates = []
         for item in news_json:
             item_date = item['created'].split()[0]
@@ -29,14 +28,19 @@ def news(request, link_id=None):
         dates.sort(reverse=True)
 
         news_dict = {}
+        q = request.GET.get('q')
         for date in dates:
             day_list = []
             for news_item in news_json:
-                if news_item['created'].split()[0] == date:
-                    day_list.append((news_item['title'], news_item['link']))
+                if q:
+                    if (q in news_item['title'] or q in news_item['text']) and news_item['created'].split()[0] == date:
+                        day_list.append((news_item['title'], news_item['link']))
+                else:
+                    if news_item['created'].split()[0] == date:
+                        day_list.append((news_item['title'], news_item['link']))
             news_dict[date] = dict(day_list)
         context = {'news_dict': news_dict}
-        print(context)
+        # print(context)
         # news/
         return render(request, 'news/news_list.html', context)
 
@@ -54,7 +58,7 @@ class CreateNews(View):
         new_id = max(ids) + 1
         # todo: find first available int for id ?
         # date
-        now = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # data from form
         title = request.POST['title']
         text = request.POST['text']
