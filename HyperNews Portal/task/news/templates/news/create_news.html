@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>HyperNews</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="title">Title
+        <input type="text" name="title" id="title">
+    </label>
+    <br>
+    <label style="vertical-align:top" for="text">Text</label>
+        <textarea name="text" id="text" cols="15" rows="10"></textarea>
+
+    <br>
+    <button type="submit">Create</button>
+</form>
+<a href="/news/" target="_blank">Back to all news</a>
+</body>
+</html>

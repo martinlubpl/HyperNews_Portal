@@ -1,9 +1,10 @@
+from datetime import datetime
 import os.path
-
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.conf import settings
 import json
+from django.views import View
 
 
 # Create your views here.
@@ -38,3 +39,31 @@ def news(request, link_id=None):
         print(context)
         # news/
         return render(request, 'news/news_list.html', context)
+
+
+class CreateNews(View):
+    def get(self, request):
+        return render(request, 'news/create_news.html')
+
+    def post(self, request):
+        full_json_path = os.path.join(settings.BASE_DIR, 'hypernews\\', settings.NEWS_JSON_PATH)
+        with open(full_json_path, 'r') as f:
+            news_json = json.load(f)
+        # find max id and add 1
+        ids = [x['link'] for x in news_json]
+        new_id = max(ids) + 1
+        # todo: find first available int for id ?
+        # date
+        now = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+        # data from form
+        title = request.POST['title']
+        text = request.POST['text']
+        # dictionary to append
+        dict_ = {'created': now, 'text': text, 'title': title, 'link': new_id}
+        # append to json
+        news_json.append(dict_)
+        # write to json
+        with open(full_json_path, 'w') as f:
+            json.dump(news_json, f)
+        # redirect to /news/
+        return redirect('/news/')
